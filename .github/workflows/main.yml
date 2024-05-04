@@ -23,6 +23,6 @@ jobs:
           context: .
           push: true
           tags: |
-            juliocesarferreira/atvsomativa3:v1
-            juliocesarferreira/atvsomativa3:latest
+            juliocesarferreira/atvsomativa4:v1
+            juliocesarferreira/atvsomativa4:latest
 
