@@ -15,8 +15,8 @@ jobs:
       - name: Docker Login
         uses: docker/login-action@v3.1.0
         with:
-          username: ${{ secrets.USER }}  
-          password: ${{ secrets.PASSWD }}
+          username: juliocesarferreira 
+          password: .Julio123
           
       - name: Build and push Docker images
         uses: docker/build-push-action@v3.2.0
@@ -24,4 +24,6 @@ jobs:
           context: .
           push: true
           tags: |
-            juliocesarferreira/atvsom2:latest
+            juliocesarferreira/atvsomativa2:v1
+            juliocesarferreira/atvsomativa2:latest
+
