@@ -9,7 +9,6 @@ jobs:
     runs-on: ubuntu-latest
     
     steps:
-    
       - uses: actions/checkout@v3
     
       - name: Docker Login
@@ -17,13 +16,25 @@ jobs:
         with:
           username: juliocesarferreira 
           password: .Julio123
-          
+
       - name: Build and push Docker images
         uses: docker/build-push-action@v3.2.0
         with:
           context: .
           push: true
           tags: |
-            juliocesarferreira/atvsomativa2:v1
-            juliocesarferreira/atvsomativa2:latest
+            juliocesarferreira/atvsomativa3:v1
+            juliocesarferreira/atvsomativa3:latest
+
+      # Adicionando teste de segurança SAST usando CodeQL
+      - name: CodeQL Analysis
+        uses: github/codeql-action@v1
+        with:
+          languages: javascript, python, java # Adapte para as linguagens do seu projeto
+
+      # Adicionando teste de segurança DAST usando OWASP ZAP
+      - name: Run OWASP ZAP Scan
+        run: |
+          docker run -v $(pwd):/zap/wrk/:rw -t owasp/zap2docker-stable zap-baseline.py -t http://yourapp.com -g gen.conf -r zap-report.html
+
 
