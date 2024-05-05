@@ -11,6 +11,9 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v3
       
+      - name: List files in repository
+        run: ls -l
+
       - name: Build Docker image
         run: docker build -t juliocesarferreira/atvsomativa4:v1 .
       
@@ -47,15 +50,3 @@ jobs:
           tags: |
             juliocesarferreira/atvsomativa4:v1
             juliocesarferreira/atvsomativa4:latest
-      
-      - name: Create GitHub Pages
-        run: |
-          echo "<html><body><img src='https://hub.docker.com/juliocesarferreira/atvsomativa4:v1'></body></html>" > index.html
-          mkdir docs
-          mv index.html docs/
-          echo 'docs' > .gitignore
-          git config --global user.email "github-actions[bot]@users.noreply.github.com"
-          git config --global user.name "github-actions[bot]"
-          git add docs/index.html
-          git commit -m "Add Docker image to GitHub Pages"
-          git push
