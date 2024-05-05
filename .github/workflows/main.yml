@@ -23,7 +23,8 @@ jobs:
       # Verifica as vulnerabilidades na imagem usando Trivy
       - name: Check image vulnerabilities with Trivy
         run: |
-          trivy juliocesarferreira/atvsomativa4:v1
+          trivy image juliocesarferreira/atvsomativa4:v1
+
 
       # Etapa para fazer o login no Docker Hub (ou outro registro de contêineres)
       - name: Docker Login
