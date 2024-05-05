@@ -34,12 +34,11 @@ jobs:
         uses: actions/checkout@v3
 
       - name: Deploy to GitHub Pages
-        uses: JamesIves/github-pages-deploy-action@3.7.1
+        uses: JamesIves/github-pages-deploy-action@4
         with:
-          ACCESS_TOKEN: ${{ secrets.TOKEN }}
-          BRANCH: main
-          FOLDER: .
-          CLEAN: true
+          token: ${{ secrets.GITHUB_TOKEN }}
+          source: .
+          branch: main
 
   test:
     runs-on: ubuntu-latest
@@ -51,7 +50,7 @@ jobs:
       
       - name: Check image vulnerabilities with Trivy
         run: |
-          trivy image juliocesarferreira/atvsomativa4:v1 > trivy_report.txt
+          trivy image juliocesarferreira/atvsomativa5:v1 > trivy_report.txt
       
       - name: Show Trivy report
         run: cat trivy_report.txt
