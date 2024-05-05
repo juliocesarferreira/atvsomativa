@@ -1,0 +1,48 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+
+jobs:
+  CI:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - uses: actions/checkout@v3
+      
+      # Etapa para construir a imagem Docker
+      - name: Build Docker image
+        run: docker build -t juliocesarferreira/atvsomativa4:v1 .
+      
+      # Instalação do Anchore CLI
+      - name: Install Anchore CLI
+        run: |
+          curl -sSL https://github.com/anchore/anchore-cli/releases/download/v0.13.2/anchore-cli-Linux-x86_64 && chmod +x ./anchore-cli-Linux-x86_64 && sudo mv ./anchore-cli-Linux-x86_64 /usr/local/bin/anchore-cli
+
+      # Adiciona a imagem Docker ao Anchore Engine
+      - name: Add image to Anchore Engine
+        run: anchore-cli image add juliocesarferreira/atvsomativa4:v1
+
+      # Verifica as vulnerabilidades na imagem
+      - name: Check image vulnerabilities
+        run: |
+          output=$(anchore-cli image vuln juliocesarferreira/atvsomativa4:v1)
+          echo "$output"
+
+      # Etapa para fazer o login no Docker Hub (ou outro registro de contêineres)
+      - name: Docker Login
+        uses: docker/login-action@v3.1.0
+        with:
+          username: juliocesarferreira 
+          password: .Julio123
+
+      # Etapa para construir e enviar a imagem Docker para o registro de contêineres
+      - name: Build and push Docker images
+        uses: docker/build-push-action@v3.2.0
+        with:
+          context: .
+          push: true
+          tags: |
+            juliocesarferreira/atvsomativa4:v1
+            juliocesarferreira/atvsomativa4:latest
