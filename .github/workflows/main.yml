@@ -4,15 +4,42 @@ on:
   push:
     branches: [main]
 
-    
 jobs:
   CI:
     runs-on: ubuntu-latest
     
     steps:
       - uses: actions/checkout@v3
+      
+      # Etapa para configurar o Code Scanning
+      - name: Code Scanning
+        uses: github/codeql-action@v2
+        with:
+          # Diretório onde o código a ser analisado está localizado
+          languages: javascript,html
 
-    
+      # Notificação sobre vulnerabilidades encontradas
+      - name: Notify on Code Scanning results
+        if: ${{ always() }}
+        uses: actions/github-script@v5
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            const { data } = await github.rest.codeScanning.listAlertsForRepo({
+              owner: context.repo.owner,
+              repo: context.repo.repo
+            });
+
+            if (data.alerts.length > 0) {
+              const alertMessage = data.alerts.map(alert => `Vulnerabilidade: ${alert.rule.name}, Severidade: ${alert.rule.severity}`).join('\n');
+              github.rest.issues.create({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                title: 'Vulnerabilidades encontradas durante a análise de código',
+                body: `Foram encontradas as seguintes vulnerabilidades durante a análise de código:\n\n${alertMessage}`
+              });
+            }
+      
       - name: Docker Login
         uses: docker/login-action@v3.1.0
         with:
@@ -27,4 +54,3 @@ jobs:
           tags: |
             juliocesarferreira/atvsomativa4:v1
             juliocesarferreira/atvsomativa4:latest
-
