@@ -48,5 +48,5 @@ jobs:
           context: .
           push: true
           tags: |
-            juliocesarferreira/atvsomativa4:v1
-            juliocesarferreira/atvsomativa4:latest
+            juliocesarferreira/atvsom6:v1
+            juliocesarferreira/atvsom6:latest
