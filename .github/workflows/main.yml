@@ -5,7 +5,7 @@ on:
     branches: [main]
 
 jobs:
-  build:
+  build_and_deploy:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
@@ -15,11 +15,20 @@ jobs:
         run: ls -l
       
       - name: Build Docker image
-        run: docker build -t juliocesarferreira/atvsomativa4:v1 -f Dockerfile .
+        run: docker build -t juliocesarferreira/atvsomativa5:v1 -f Dockerfile .
+      
+      - name: Log in to Docker Hub
+        uses: docker/login-action@v3.1.0
+        with:
+          username: juliocesarferreira
+          password: .Julio123
+      
+      - name: Push Docker image to Docker Hub
+        run: docker push juliocesarferreira/atvsomativa5:v1
       
   test:
     runs-on: ubuntu-latest
-    needs: build
+    needs: build_and_deploy
     steps:
       - name: Install Trivy
         run: |
@@ -34,19 +43,20 @@ jobs:
 
   deploy:
     runs-on: ubuntu-latest
-    needs: test
+    needs: build_and_deploy
     steps:
-      - name: Docker Login
-        uses: docker/login-action@v3.1.0
-        with:
-          username: juliocesarferreira 
-          password: .Julio123
+      - name: Checkout repository
+        uses: actions/checkout@v2
       
-      - name: Build and push Docker images
-        uses: docker/build-push-action@v3.2.0
+      - name: Extract files from Docker image
+        run: |
+          mkdir -p deploy
+          docker create --name temp-container juliocesarferreira/atvsomativa4:v1
+          docker cp temp-container:/var/www/html/index.html ./deploy
+          docker rm temp-container
+      
+      - name: Deploy to GitHub Pages
+        uses: peaceiris/actions-gh-pages@v3
         with:
-          context: .
-          push: true
-          tags: |
-            juliocesarferreira/atvsom6:v1
-            juliocesarferreira/atvsom6:latest
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./deploy
