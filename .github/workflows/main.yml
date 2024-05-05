@@ -15,20 +15,15 @@ jobs:
       - name: Build Docker image
         run: docker build -t juliocesarferreira/atvsomativa4:v1 .
       
-      # Instalação do Anchore CLI
-      - name: Install Anchore CLI
+      # Instalação do Trivy
+      - name: Install Trivy
         run: |
-          curl -sSL https://github.com/anchore/anchore-cli/releases/download/v0.13.2/anchore-cli-Linux-x86_64 && chmod +x ./anchore-cli-Linux-x86_64 && sudo mv ./anchore-cli-Linux-x86_64 /usr/local/bin/anchore-cli
+          curl -sfL https://raw.githubusercontent.com/aquasecurity/trivy/main/contrib/install.sh | sh -s -- -b /usr/local/bin
 
-      # Adiciona a imagem Docker ao Anchore Engine
-      - name: Add image to Anchore Engine
-        run: anchore-cli image add juliocesarferreira/atvsomativa4:v1
-
-      # Verifica as vulnerabilidades na imagem
-      - name: Check image vulnerabilities
+      # Verifica as vulnerabilidades na imagem usando Trivy
+      - name: Check image vulnerabilities with Trivy
         run: |
-          output=$(anchore-cli image vuln juliocesarferreira/atvsomativa4:v1)
-          echo "$output"
+          trivy juliocesarferreira/atvsomativa4:v1
 
       # Etapa para fazer o login no Docker Hub (ou outro registro de contêineres)
       - name: Docker Login
