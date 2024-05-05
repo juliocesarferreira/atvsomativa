@@ -48,8 +48,8 @@ jobs:
       - name: Configure GitHub Pages
         uses: actions/configure-pages@v5.0.0
         with:
-          token: ${{ secrets.TOKEN }} # Usando o token padrão do GitHub
-          enablement: true # Tentar habilitar Pages para o repositório se ainda não estiver habilitado
+          token: ${{ secrets.TOKEN }} 
+          enablement: true 
 
   deploy:
     runs-on: ubuntu-latest
@@ -62,5 +62,5 @@ jobs:
         uses: JamesIves/github-pages-deploy-action@4.1.5
         with:
           token: ${{ secrets.TOKEN }}
-          folder: .  # Indicando a pasta raiz do repositório
+          folder: .  
           branch: main
