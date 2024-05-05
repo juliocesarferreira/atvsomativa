@@ -37,7 +37,7 @@ jobs:
         uses: JamesIves/github-pages-deploy-action@4.1.5
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
-          source: .
+          folder: .  # Atualizei aqui para indicar a pasta raiz do repositório
           branch: main
 
   test:
