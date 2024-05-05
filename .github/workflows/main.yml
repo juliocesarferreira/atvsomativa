@@ -13,7 +13,7 @@ jobs:
       
       # Etapa para configurar o Code Scanning
       - name: Code Scanning
-        uses: github/codeql-action@v3
+        uses: github/codeql-action
         with:
           # Diretório onde o código a ser analisado está localizado
           languages: javascript,html
