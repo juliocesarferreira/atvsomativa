@@ -26,9 +26,18 @@ jobs:
       - name: Push Docker image to Docker Hub
         run: docker push juliocesarferreira/atvsomativa5:v1
 
+  configure-pages:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Configure GitHub Pages
+        uses: actions/configure-pages@v5.0.0
+        with:
+          token: ${{ secrets.TOKEN }} # Usando o token padrão do GitHub
+          enablement: true # Tentar habilitar Pages para o repositório se ainda não estiver habilitado
+
   deploy:
     runs-on: ubuntu-latest
-    needs: build
+    needs: [build, configure-pages]
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
