@@ -1,42 +1,44 @@
-name: CI
+name: CI/CD Pipeline
 
 on:
   push:
     branches: [main]
 
 jobs:
-  CI:
+  build:
     runs-on: ubuntu-latest
-    
     steps:
-      - uses: actions/checkout@v3
+      - name: Checkout code
+        uses: actions/checkout@v3
       
-      # Etapa para construir a imagem Docker
       - name: Build Docker image
         run: docker build -t juliocesarferreira/atvsomativa4:v1 .
       
-      # Instalação do Trivy
+  test:
+    runs-on: ubuntu-latest
+    needs: build
+    steps:
       - name: Install Trivy
         run: |
           curl -sfL https://raw.githubusercontent.com/aquasecurity/trivy/main/contrib/install.sh | sh -s -- -b /usr/local/bin
-
-      # Verifica as vulnerabilidades na imagem usando Trivy
+      
       - name: Check image vulnerabilities with Trivy
         run: |
           trivy image juliocesarferreira/atvsomativa4:v1 > trivy_report.txt
-
-      # Mostra os erros detectados na pipeline
+      
       - name: Show Trivy report
         run: cat trivy_report.txt
 
-      # Etapa para fazer o login no Docker Hub (ou outro registro de contêineres)
+  deploy:
+    runs-on: ubuntu-latest
+    needs: test
+    steps:
       - name: Docker Login
         uses: docker/login-action@v3.1.0
         with:
           username: juliocesarferreira 
-          password: .Julio123
-
-      # Etapa para construir e enviar a imagem Docker para o registro de contêineres
+          password: ${{ secrets.DOCKER_PASSWORD }}
+      
       - name: Build and push Docker images
         uses: docker/build-push-action@v3.2.0
         with:
@@ -45,3 +47,15 @@ jobs:
           tags: |
             juliocesarferreira/atvsomativa4:v1
             juliocesarferreira/atvsomativa4:latest
+      
+      - name: Create GitHub Pages
+        run: |
+          echo "<html><body><img src='https://hub.docker.com/juliocesarferreira/atvsomativa4:v1'></body></html>" > index.html
+          mkdir docs
+          mv index.html docs/
+          echo 'docs' > .gitignore
+          git config --global user.email "github-actions[bot]@users.noreply.github.com"
+          git config --global user.name "github-actions[bot]"
+          git add docs/index.html
+          git commit -m "Add Docker image to GitHub Pages"
+          git push
